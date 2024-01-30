@@ -1,0 +1,49 @@
+* lesspass-cl
+
+This repo houses an implementation of [[https://github.com/lesspass/lesspass][lesspass]] in Common Lisp.
+
+Only dependency is [[https://github.com/sharplispers/ironclad][ironclad]] and quicklisp.
+
+
+** Installation
+
+Until lesspass-cl is on quicklisp, you'll need to run the following:
+
+#+begin_src shell
+
+cd ~/quicklisp/local-projects
+git clone https://github.com/ehawkvu/lesspass-cl
+cd $OLDPWD
+
+#+end_src
+
+
+** Usage
+
+Just =(ql:quickload :lesspass)=.
+
+** Examples
+
+#+begin_src lisp
+
+(setq password-prof
+      (make-instance
+       'lesspass:password-profile
+       :site "github.com"
+       :login "user@github.com"
+       :rules
+       '(lesspass:uppercase
+         lesspass:lowercase
+         lesspass:symbols
+         lesspass:digits)
+       :length 20
+       :counter 1))
+
+(lesspass:generate-password password-prof "yourmasterpassword")
+
+#+end_src
+
+
+** Limitations
+
+Currently there is no support for Unicode.
