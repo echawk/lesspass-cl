@@ -105,9 +105,6 @@ for the computation of a password."
 
 (defun render-password (entropy password-profile)
   (let* ((rules (slot-value password-profile 'rules))
-         (excl  (set-difference
-                 (mapcar #'car *character-rules*)
-                 rules))
 
          (set-of-chars (rules-to-charset rules))
          (passwd--passwd-entropy (consume-entropy
