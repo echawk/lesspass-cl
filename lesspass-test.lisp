@@ -20,6 +20,20 @@
                        :length 16
                        :counter 1)
                       mpw)))
+    (5am:is (string= "WHLpUL)e00[iHR+w"
+                     (lesspass:generate-password
+                      (make-instance
+                       'lesspass:password-profile
+                       :site "example.org"
+                       :login "contact@example.org"
+                       :rules
+                       '(lesspass:digits
+                         lesspass:uppercase
+                         lesspass:symbols
+                         lesspass:lowercase)
+                       :length 16
+                       :counter 1)
+                      mpw)))
     (5am:is (string=  "MBAsB7b1Prt8Sl"
                       (lesspass:generate-password
                        (make-instance
