@@ -30,11 +30,11 @@ as a salt, with the MASTERPASSWORD being hashed."
   (let ((salt
           (concatenate
            'string
-           (slot-value password-profile 'site)
-           (slot-value password-profile 'login)
+           (site-of password-profile)
+           (login-of password-profile)
            (string-downcase
             (write-to-string
-             (slot-value password-profile 'counter) :base 16)))))
+             (counter-of password-profile) :base 16)))))
     (parse-integer
      (ironclad:byte-array-to-hex-string
       (ironclad:pbkdf2-hash-password
@@ -104,12 +104,12 @@ for the computation of a password."
     pass))
 
 (defun render-password (entropy password-profile)
-  (let* ((rules (slot-value password-profile 'rules))
+  (let* ((rules (rules-of password-profile))
 
          (set-of-chars (rules-to-charset rules))
          (passwd--passwd-entropy (consume-entropy
                                   "" entropy set-of-chars
-                                  (- (slot-value password-profile 'length)
+                                  (- (length-of password-profile)
                                      (length rules))))
 
          (passwd         (car  passwd--passwd-entropy))
