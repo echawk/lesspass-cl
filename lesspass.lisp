@@ -24,6 +24,9 @@
    (rules   :initarg :rules   :accessor rules-of   :type list)))
 
 (defun calculate-entropy (password-profile masterpassword)
+  "Return the entropy (integer) value that will be used to generate the rest
+of the password. Uses the site, login, and counter slots of PASSWORD-PROFILE
+as a salt, with the MASTERPASSWORD being hashed."
   (let ((salt
           (concatenate
            'string
@@ -62,6 +65,8 @@
        (position b car-char-rules))))
 
 (defun rules-to-charset (rules)
+  "Converts a list of lesspass rule symbols, RULES, into a string suitable
+for the computation of a password."
   (let ((sorted-rules
           (sort rules #'sort-rules)))
     (apply #'concatenate 'string
@@ -124,5 +129,7 @@
     pass))
 
 (defun generate-password (password-profile masterpassword)
+  "Return a string containing the generated password given the PASSWORD-PROFILE
+and the MASTERPASSWORD."
   (let ((entropy (calculate-entropy password-profile masterpassword)))
     (render-password entropy password-profile)))
