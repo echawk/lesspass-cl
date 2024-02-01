@@ -46,16 +46,15 @@
 (defun consume-entropy (generated-password quotient set-of-chars max-length)
   (if (>= (length generated-password) max-length)
       (list generated-password quotient)
-      (progn
-        (let* ((qr (divmod quotient (length set-of-chars)))
-               (q  (nth 0 qr))
-               (r  (nth 1 qr)))
-          (consume-entropy
-           (concatenate 'string generated-password
-                        (string (char set-of-chars r)))
-           q
-           set-of-chars
-           max-length)))))
+      (let* ((qr (divmod quotient (length set-of-chars)))
+             (q  (nth 0 qr))
+             (r  (nth 1 qr)))
+        (consume-entropy
+         (concatenate 'string generated-password
+                      (string (char set-of-chars r)))
+         q
+         set-of-chars
+         max-length))))
 
 (defun sort-rules (a b)
   (let ((car-char-rules (mapcar #'car *character-rules*)))
