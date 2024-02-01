@@ -104,7 +104,7 @@ for the computation of a password."
     pass))
 
 (defun render-password (entropy password-profile)
-  (let* ((rules (rules-of password-profile))
+  (let* ((rules (sort (rules-of password-profile) #'sort-rules))
 
          (set-of-chars (rules-to-charset rules))
          (passwd--passwd-entropy (consume-entropy
