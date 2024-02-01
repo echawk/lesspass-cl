@@ -17,11 +17,11 @@
     (symbols   . "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")))
 
 (defclass password-profile ()
-  ((site    :initarg :site    :accessor site-of)
-   (login   :initarg :login   :accessor login-of)
-   (length  :initarg :length  :accessor length-of)
-   (counter :initarg :counter :accessor counter-of)
-   (rules   :initarg :rules   :accessor rules-of)))
+  ((site    :initarg :site    :accessor site-of    :type string)
+   (login   :initarg :login   :accessor login-of   :type string)
+   (length  :initarg :length  :accessor length-of  :type integer)
+   (counter :initarg :counter :accessor counter-of :type integer)
+   (rules   :initarg :rules   :accessor rules-of   :type list)))
 
 (defun calculate-entropy (password-profile masterpassword)
   (let ((salt
