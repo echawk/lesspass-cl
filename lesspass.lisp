@@ -27,6 +27,7 @@
   "Return the entropy (integer) value that will be used to generate the rest
 of the password. Uses the site, login, and counter slots of PASSWORD-PROFILE
 as a salt, with the MASTERPASSWORD being hashed."
+  (declare (type string masterpassword))
   (let ((salt
           (concatenate
            'string
