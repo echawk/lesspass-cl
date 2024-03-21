@@ -47,3 +47,5 @@ Just =(ql:quickload :lesspass)=.
 ** Limitations
 
 Currently there is no support for Unicode.
+
+It _may_ be possible to incorporate this library: http://edicl.github.io/cl-unicode/
