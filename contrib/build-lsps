@@ -1,0 +1,5 @@
+#!/bin/sh
+
+sbcl --load lsps.lisp \
+     --eval "(setq uiop:*image-entry-point* #'lsps::main)" \
+     --eval "(uiop:dump-image \"lsps.exe\" :executable t :compression t)"
