@@ -106,7 +106,7 @@
     :description "rules for the password"
     :short-name #\r
     :long-name "rules"
-    :initial-value ""
+    :initial-value "luds"
     :key :rules)
    (clingon:make-option
     :string
@@ -134,6 +134,9 @@
     (let* ((site
              (if (not (string= "" cli-site)) cli-site
                  (prompt-for-site lsps-db)))
+           (login
+             (if (not (string= "" cli-login)) cli-login
+                 (prompt-for-login)))
            (masterpassword
              (if (not (string= "" cli-masterpassword)) cli-masterpassword
                  (prompt-for-mpw))))
@@ -144,10 +147,7 @@
        (lesspass:generate-password
         (lst-to-password-prof
          (let ((site-is-in-lsps-db-p
-                 (find-if (lambda (it) (string= (car it) site)) lsps-db))
-               (login
-                 (if (not (string= "" cli-login)) cli-login
-                     (prompt-for-login))))
+                 (find-if (lambda (it) (string= (car it) site)) lsps-db)))
            (if site-is-in-lsps-db-p
                (insert login site-is-in-lsps-db-p 1)
                (list
@@ -155,8 +155,7 @@
                 login
                 (if (not (string= "" cli-length)) cli-length
                     (prompt-for-length))
-                (if (not (string= "" cli-rules)) cli-rules
-                    (prompt-for-rules))
+                cli-rules
                 (if (not (string= "" cli-counter)) cli-counter
                     (prompt-for-counter))))))
         masterpassword)))))
