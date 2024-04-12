@@ -121,7 +121,29 @@
     :short-name #\n
     :long-name "length"
     :initial-value "16"
-    :key :length)))
+    :key :length)
+   (clingon:make-option
+    :choice
+    :description "Action to take on the generated password."
+    :short-name #\a
+    :long-name "action"
+    :initial-value "print"
+    :key :action
+    :items '("x11-copy" "way-copy" "print"))))
+
+(defun handle-generated-password (password action-str)
+  (cond
+    ((string= action-str "x11-copy")
+     (uiop:run-program
+      "xclip -i -selection clipboard"
+      :input (make-string-input-stream password)))
+    ((string= action-str "way-copy")
+     (uiop:run-program
+      "waycopy -p"
+      :input (make-string-input-stream password)))
+    ((string= action-str "print")
+     (princ password))
+    (t nil)))
 
 (defun cli-handler (cmd)
   (let ((lsps-db            (read-config))
@@ -130,7 +152,8 @@
         (cli-masterpassword (clingon:getopt cmd :masterpassword))
         (cli-counter        (clingon:getopt cmd :counter))
         (cli-rules          (clingon:getopt cmd :rules))
-        (cli-length         (clingon:getopt cmd :length)))
+        (cli-length         (clingon:getopt cmd :length))
+        (cli-action         (clingon:getopt cmd :action)))
     (let* ((site
              (if (not (string= "" cli-site)) cli-site
                  (prompt-for-site lsps-db)))
@@ -141,9 +164,7 @@
              (if (not (string= "" cli-masterpassword)) cli-masterpassword
                  (prompt-for-mpw))))
 
-      ;; FIXME: properly handle the string here...
-      ;; IE: allow for copying to the clipboard etc.
-      (princ
+      (handle-generated-password
        (lesspass:generate-password
         (lst-to-password-prof
          (let ((site-is-in-lsps-db-p
@@ -158,7 +179,8 @@
                 cli-rules
                 (if (not (string= "" cli-counter)) cli-counter
                     (prompt-for-counter))))))
-        masterpassword)))))
+        masterpassword)
+       cli-action))))
 
 (defun cli-command ()
   (clingon:make-command
