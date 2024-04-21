@@ -2,8 +2,7 @@
 
 This repo houses an implementation of [[https://github.com/lesspass/lesspass][lesspass]] in Common Lisp.
 
-Only dependency is [[https://github.com/sharplispers/ironclad][ironclad]] and quicklisp.
-
+Only dependencies are [[https://github.com/sharplispers/ironclad][ironclad]], [[https://edicl.github.io/flexi-streams/][flexi-streams]], and quicklisp.
 
 ** Installation
 
