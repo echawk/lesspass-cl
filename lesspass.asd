@@ -3,7 +3,7 @@
   :author "Ethan Hawk <ethan.hawk@valpo.edu>"
   :license "MIT"
   :version "1.0.0"
-  :depends-on (:ironclad :flexi-streams)
+  :depends-on (:ironclad :babel)
   :components ((:file "package")
                (:file "lesspass")))
 

@@ -39,8 +39,8 @@ as a salt, with the MASTERPASSWORD being hashed."
     (parse-integer
      (ironclad:byte-array-to-hex-string
       (ironclad:pbkdf2-hash-password
-       (flexi-streams:string-to-octets masterpassword :external-format :utf8)
-       :salt (flexi-streams:string-to-octets salt :external-format :utf8)
+       (babel:string-to-octets masterpassword)
+       :salt (babel:string-to-octets salt)
        :digest 'ironclad:sha256
        :iterations +iterations+))
      :radix 16)))
