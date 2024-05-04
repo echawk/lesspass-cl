@@ -91,7 +91,6 @@
                              :counter 10)
                             "test"))))
 
-;; FIXME: get this test to pass!
 (5am:test generate-password-unicode
           (5am:is (string= "BH$>U5Lj7v9A1wB/"
                            (lesspass:generate-password
