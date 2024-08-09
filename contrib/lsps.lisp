@@ -51,26 +51,33 @@
       :rules   (rules-str-to-rules-lst rules)))))
 
 (defun prompt-for-input (prompt-string &optional choices password-p)
-  (ltk:with-ltk ()
-    (let* ((prompt
-             (make-instance 'ltk:label
-                            :text prompt-string))
-           (box
-             (make-instance 'ltk:combobox
-                            :width 40
-                            :values choices))
-           (confirm-button
-             (make-instance 'ltk:button
-                            :text "confirm"
-                            :command
-                            (lambda ()
-                              (let ((res (ltk:text box)))
-                                (ltk:exit-wish)
-                                res))
-                            )))
-      (ltk:grid prompt 0 0)
-      (ltk:grid box 1 0)
-      (ltk:grid confirm-button 1 1))))
+  ;; FIXME: the way we capture input here is rather gross.
+  (let ((ret nil))
+    (ltk:with-ltk ()
+      (let* ((prompt
+               (make-instance 'ltk:label
+                              :text prompt-string))
+             (box
+               (if password-p
+                   (make-instance 'ltk:entry
+                                  :width 40
+                                  :show "*")
+                   (make-instance 'ltk:combobox
+                                  :width 40
+                                  :values choices)))
+             (confirm-button
+               (make-instance 'ltk:button
+                              :text "confirm"
+                              :command
+                              (lambda ()
+                                (let ((res (ltk:text box)))
+                                  (setf ret res)
+                                  (ltk:exit-wish)
+                                  res)))))
+        (ltk:grid prompt 0 0)
+        (ltk:grid box 1 0)
+        (ltk:grid confirm-button 1 1)))
+    ret))
 
 (defun prompt-for-site (lsps-db)
   (prompt-for-input "Choose Site:" (mapcar #'car lsps-db)))
