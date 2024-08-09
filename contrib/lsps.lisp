@@ -4,6 +4,10 @@
 (ql:quickload :lesspass)
 (ql:quickload :trivia)
 (ql:quickload :clingon)
+(ql:quickload :ltk)
+
+;; TODO: long term, add in a --gui flag which allows you to do all of the
+;; password stuff through it.
 
 (defpackage :lsps (:use :cl))
 (in-package :lsps)
@@ -46,22 +50,30 @@
       :counter (parse-integer counter)
       :rules   (rules-str-to-rules-lst rules)))))
 
-(defun prompt-for-input (prompt-string &optional input-stream password-p)
-  (let ((cmd
-          (concatenate
-           'string
-           "dmenu"
-           (if password-p " -P " "")
-           " -p '" prompt-string "'"
-           " -l 10 ")))
-    (string-trim
-     '(#\Newline)
-     (uiop:run-program cmd :input input-stream :output :string))))
+(defun prompt-for-input (prompt-string &optional choices password-p)
+  (ltk:with-ltk ()
+    (let* ((prompt
+             (make-instance 'ltk:label
+                            :text prompt-string))
+           (box
+             (make-instance 'ltk:combobox
+                            :width 40
+                            :values choices))
+           (confirm-button
+             (make-instance 'ltk:button
+                            :text "confirm"
+                            :command
+                            (lambda ()
+                              (let ((res (ltk:text box)))
+                                (ltk:exit-wish)
+                                res))
+                            )))
+      (ltk:grid prompt 0 0)
+      (ltk:grid box 1 0)
+      (ltk:grid confirm-button 1 1))))
 
 (defun prompt-for-site (lsps-db)
-  (prompt-for-input "Choose Site:"
-                    (make-string-input-stream
-                     (format nil "~{~A~%~}" (mapcar #'car lsps-db)))))
+  (prompt-for-input "Choose Site:" (mapcar #'car lsps-db)))
 
 (defun prompt-for-mpw ()
   (prompt-for-input "Enter your master password:" nil t))
