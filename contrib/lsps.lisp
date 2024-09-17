@@ -159,6 +159,10 @@
      (uiop:run-program
       "waycopy -p"
       :input (make-string-input-stream password)))
+    ((string= action-str "darwin-copy")
+     (uiop:run-program
+      "pbcopy"
+      :input (make-string-input-stream password)))
     ((string= action-str "print")
      (princ password))
     (t nil)))
