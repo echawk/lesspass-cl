@@ -147,7 +147,7 @@
     :long-name "action"
     :initial-value "print"
     :key :action
-    :items '("x11-copy" "way-copy" "print"))))
+    :items '("x11-copy" "way-copy" "mac-copy" "print"))))
 
 (defun handle-generated-password (password action-str)
   (cond
@@ -159,7 +159,7 @@
      (uiop:run-program
       "waycopy -p"
       :input (make-string-input-stream password)))
-    ((string= action-str "darwin-copy")
+    ((string= action-str "mac-copy")
      (uiop:run-program
       "pbcopy"
       :input (make-string-input-stream password)))
