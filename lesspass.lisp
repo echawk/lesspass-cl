@@ -25,19 +25,22 @@
   (:documentation
    "Store of all required data for lesspass password derivation."))
 
+(defun get-salt (password-profile)
+  "Given a PASSWORD-PROFILE, return the appropriate salt string."
+  (concatenate
+   'string
+   (site-of password-profile)
+   (login-of password-profile)
+   (string-downcase
+    (write-to-string
+     (counter-of password-profile) :base 16))))
+
 (defun calculate-entropy (password-profile masterpassword)
   "Return the entropy (integer) value that will be used to generate the rest
 of the password. Uses the site, login, and counter slots of PASSWORD-PROFILE
 as a salt, with the MASTERPASSWORD being hashed."
   (declare (type string masterpassword))
-  (let ((salt
-          (concatenate
-           'string
-           (site-of password-profile)
-           (login-of password-profile)
-           (string-downcase
-            (write-to-string
-             (counter-of password-profile) :base 16)))))
+  (let ((salt (get-salt password-profile)))
     (parse-integer
      (ironclad:byte-array-to-hex-string
       (ironclad:pbkdf2-hash-password
