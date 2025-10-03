@@ -21,7 +21,9 @@
    (login   :initarg :login   :accessor login-of   :type string)
    (length  :initarg :length  :accessor length-of  :type integer)
    (counter :initarg :counter :accessor counter-of :type integer)
-   (rules   :initarg :rules   :accessor rules-of   :type list)))
+   (rules   :initarg :rules   :accessor rules-of   :type list))
+  (:documentation
+   "Store of all required data for lesspass password derivation."))
 
 (defun calculate-entropy (password-profile masterpassword)
   "Return the entropy (integer) value that will be used to generate the rest
@@ -51,8 +53,8 @@ as a salt, with the MASTERPASSWORD being hashed."
   (if (>= (length generated-password) max-length)
       (list generated-password quotient)
       (let* ((qr (divmod quotient (length set-of-chars)))
-             (q  (nth 0 qr))
-             (r  (nth 1 qr)))
+             (q  (first  qr))
+             (r  (second qr)))
         (consume-entropy
          (concatenate 'string generated-password
                       (string (char set-of-chars r)))
@@ -60,7 +62,9 @@ as a salt, with the MASTERPASSWORD being hashed."
          set-of-chars
          max-length))))
 
-(defun sort-rules (a b)
+(defun order-rules (a b)
+  "Given two rule symbols A & B, return T if A is before B in *CHARACTER-RULES*.
+NIL otherwise."
   (let ((car-char-rules (mapcar #'car *character-rules*)))
     (< (position a car-char-rules)
        (position b car-char-rules))))
@@ -69,9 +73,9 @@ as a salt, with the MASTERPASSWORD being hashed."
   "Converts a list of lesspass rule symbols, RULES, into a string suitable
 for the computation of a password."
   (let ((sorted-rules
-          (sort rules #'sort-rules)))
+          (sort rules #'order-rules)))
     (apply #'concatenate 'string
-           (mapcar (lambda (S) (cdr (assoc S *character-rules*)))
+           (mapcar (lambda (S) (rest (assoc S *character-rules*)))
                    sorted-rules))))
 
 (defun get-one-char-per-rule (entropy rules)
@@ -81,10 +85,10 @@ for the computation of a password."
           :do
              (let* ((avail-chars   (rules-to-charset (list rule)))
                     (value-entropy (consume-entropy "" ent avail-chars 1))
-                    (value (car value-entropy))
-                    (en    (cadr value-entropy)))
-               (setq ent en)
-               (setq one-char-per-rules
+                    (value (first  value-entropy))
+                    (en    (second value-entropy)))
+               (setf ent en)
+               (setf one-char-per-rules
                      (concatenate 'string one-char-per-rules value))))
     (list one-char-per-rules ent)))
 
@@ -94,18 +98,18 @@ for the computation of a password."
     (loop :for char :in (coerce string 'list)
           :do
              (let* ((qr (divmod entr (length pass)))
-                    (q  (nth 0 qr))
-                    (r  (nth 1 qr)))
-               (setq pass
+                    (q  (first  qr))
+                    (r  (second qr)))
+               (setf pass
                      (concatenate 'string
                                   (subseq pass 0 r)
                                   (string char)
                                   (subseq pass r (length pass))))
-               (setq entr q)))
+               (setf entr q)))
     pass))
 
 (defun render-password (entropy password-profile)
-  (let* ((rules (sort (rules-of password-profile) #'sort-rules))
+  (let* ((rules (sort (rules-of password-profile) #'order-rules))
 
          (set-of-chars (rules-to-charset rules))
          (passwd--passwd-entropy (consume-entropy
@@ -113,14 +117,14 @@ for the computation of a password."
                                   (- (length-of password-profile)
                                      (length rules))))
 
-         (passwd         (car  passwd--passwd-entropy))
-         (passwd-entropy (cadr passwd--passwd-entropy))
+         (passwd         (first  passwd--passwd-entropy))
+         (passwd-entropy (second passwd--passwd-entropy))
 
          (chars-to-add--char-entropy (get-one-char-per-rule
                                       passwd-entropy rules))
 
-         (chars-to-add (car  chars-to-add--char-entropy))
-         (char-entropy (cadr chars-to-add--char-entropy))
+         (chars-to-add (first  chars-to-add--char-entropy))
+         (char-entropy (second chars-to-add--char-entropy))
 
          (pass (insert-string-psuedo-randomly
                 passwd char-entropy chars-to-add)))
